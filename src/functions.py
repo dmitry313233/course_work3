@@ -7,17 +7,21 @@ PATH_TO_JSON = os.path.join(PROJECT_PATH, 'src', 'operations.json')
 
 def from_json_data():
     with open(PATH_TO_JSON, 'r', encoding='UTF-8') as file:
+        """Создаём переменную для сохранения в неё json файла"""
         data = json.load(file)
     return data
 
 
 def get_iso_date(operation):
+    """В этой функции получаем строку по ключу 'date' в словаре и с помощью функции получаем два значения"""
     splitted_date, splitted_time = operation['date'].split('T')
+    """С помощью функции преобразуем строку в особый формат и записываем его в переменую"""
     iso_date = date.fromisoformat(splitted_date)
     return iso_date
 
 
 def format_data(operation: dict) -> str:
+    """В этой функции получаем строки которые нам нужны обращаясь к словарю по ключам"""
     date = operation.get('date')
     description = operation.get('description')
     sender = operation.get('from', '')
@@ -33,11 +37,13 @@ def format_data(operation: dict) -> str:
 
 
 def reformed_date(date):
+    """В этой функции преобразуем дату и время в определённый тип даты в той последовательности которой нам нужно"""
     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f')
     return date.strftime('%d.%m.%Y')
 
-#print(reformed_date("2019-07-13T18:51:29.313309"))
-def get_blure_number(card: str):
+
+def get_blure_number(card):
+    """В этой функции мы разделяем карту и счет, преобразуем в список и изменяем значения по индексам"""
     card, number = card.rsplit(" ", 1)
     if len(number) == 16:
         number = list(number)
@@ -45,43 +51,8 @@ def get_blure_number(card: str):
         for i in range(1, len(number) + 1):
             if i % 4 == 0:
                 number[i - 1] += " "
+                """"Возвращаем строку с помощью метода join"""
         return card + ' ' + ''.join(number)
     elif len(number) == 20:
         number = '**' + number[-4:]
         return card + " " + number
-
-#print(get_blure_number('Счет 44812258784861134719'))
-
-#def show(operation_info) -> str:
-    # получение отформатированой даты(метод strftime())  1 функция
-    # отличить счет от карты и создать ***, отформатировать  2 функция
-    # получение стоимости с учетом курса  3 функция
-
-
-
-
-# def get_masked_card_number(card_number: str) -> str:
-#     return f"{card_number[:6]} {'*' * 8} {card_number[-4:]}"
-#
-#
-# def get_masked_account_number(account_number: str) -> str:
-#     return f"**{account_number[-4:]}"
-#
-#
-# def format_operation_date(date_str: str) -> str:
-#     date = datetime.strftime(date_str, '%Y-%m-%d %H:%S.%f')
-#     return date.strftime('%d,%m.%Y')
-#
-#
-# def format_operation(operation: dict) -> str:
-#     date = format_operation_date(operation['date'])
-#     description = operation['description']
-#     from_ = operation.get('from', '')
-#     to = operation['to']
-#     amount = operation['operationAmount']['amount']
-#     currency = operation['operationAmount']['currency']
-#
-#     formatted_from = get_masked_card_number(from_) if from_ else ''
-#     formatted_to = get_masked_account_number(to)
-#
-#     return f"{date} {description}\n{formatted_from} -> {formatted_to}\n{amount} {currency}"
